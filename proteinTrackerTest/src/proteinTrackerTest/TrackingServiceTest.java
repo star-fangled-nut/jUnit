@@ -1,14 +1,24 @@
 package proteinTrackerTest;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.Timeout;
 
 import com.simpleprogrammer.proteintracker.InvalidGoalException;
 import com.simpleprogrammer.proteintracker.TrackingService;
@@ -49,6 +59,9 @@ public class TrackingServiceTest {
 	public void whenAddingProteinTotalIncreseasesByThatAmount() {
 		service.addProtein(10);
 		assertEquals("Protein amount was not correct",10,service.getTotal());
+		assertThat(service.getTotal(), is(10));
+		
+		assertThat(service.getTotal(), allOf(is(10), instanceOf(Integer.class)));
 	}
 	
 	@Test
@@ -58,12 +71,23 @@ public class TrackingServiceTest {
 		assertEquals(0, service.getTotal());
 	}
 	
-	@Test(expected = InvalidGoalException.class)
+	@Rule
+	public ExpectedException thrownException = ExpectedException.none();
+	
+	@Test
+	//@Test(expected = InvalidGoalException.class)
 	public void whenGoalIsSetToLessThanZeroExceptionIsThrown() throws InvalidGoalException {
+		thrownException.expect(InvalidGoalException.class);
+		thrownException.expectMessage("Goal was less than zero");
+		thrownException.expectMessage(containsString("Goal"));
 		service.setGoal(-5);
 	}
 	
-	@Test(timeout = 200)
+	@Rule
+	public Timeout timeoutRule = new Timeout(2, TimeUnit.SECONDS);
+	
+	//@Test(timeout = 200)
+	@Test
 	public void badTest() {
 		for (int i = 0; i < 10000000 ; i++) {
 			service.addProtein(1);
