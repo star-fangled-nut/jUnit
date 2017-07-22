@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.simpleprogrammer.proteintracker.InvalidGoalException;
 import com.simpleprogrammer.proteintracker.TrackingService;
@@ -38,6 +39,7 @@ public class TrackingServiceTest {
 	}
 	
 	@Test
+	@Category({GoodTestsCategory.class, BadTestsCategory.class})
 	public void newTrackingServiceTotalIsZero() {
 		assertEquals("Tracking service total was not zero", 0, service.getTotal());
 	}
@@ -50,6 +52,7 @@ public class TrackingServiceTest {
 	}
 	
 	@Test
+	@Category(GoodTestsCategory.class)
 	public void whenRemovingProteinTotalRemainsZero() {
 		service.removeProtein(5);
 		assertEquals(0, service.getTotal());
@@ -58,5 +61,12 @@ public class TrackingServiceTest {
 	@Test(expected = InvalidGoalException.class)
 	public void whenGoalIsSetToLessThanZeroExceptionIsThrown() throws InvalidGoalException {
 		service.setGoal(-5);
+	}
+	
+	@Test(timeout = 200)
+	public void badTest() {
+		for (int i = 0; i < 10000000 ; i++) {
+			service.addProtein(1);
+		} 
 	}
 }
