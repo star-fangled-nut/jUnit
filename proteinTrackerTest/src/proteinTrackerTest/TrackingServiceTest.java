@@ -7,8 +7,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.Timeout;
 
 import com.simpleprogrammer.proteintracker.InvalidGoalException;
 import com.simpleprogrammer.proteintracker.TrackingService;
@@ -29,23 +26,23 @@ public class TrackingServiceTest {
 	
 	@BeforeClass
 	public static void before() {
-		System.out.println("Before class");
+		//System.out.println("Before class");
 	}
 	
 	@AfterClass
 	public static void after() {
-		System.out.println("After class");
+		//System.out.println("After class");
 	}
 	
 	@Before
 	public void setup() {
-		System.out.println("before");
+		//System.out.println("before");
 		service = new TrackingService();
 	}
 	
 	@After
 	public void teardown() {
-		System.out.println("After");
+		//System.out.println("After");
 	}
 	
 	@Test
@@ -83,14 +80,56 @@ public class TrackingServiceTest {
 		service.setGoal(-5);
 	}
 	
-	@Rule
-	public Timeout timeoutRule = new Timeout(2, TimeUnit.SECONDS);
+//	@Rule
+//	public Timeout timeoutRule = new Timeout(2, TimeUnit.SECONDS);
 	
 	//@Test(timeout = 200)
+	@Ignore
 	@Test
 	public void badTest() {
 		for (int i = 0; i < 10000000 ; i++) {
 			service.addProtein(1);
 		} 
 	}
+	
+	@Test
+	public void goalIsMetReturnsTrueWhenTotalIsGreaterThanGoal() throws InvalidGoalException {
+		service.setGoal(5);
+		service.addProtein(6);
+		assertThat("Goal is met", service.isGoalMet(), is(true));
+				
+	}
+	
+	@Test
+	public void goalIsMetReturnsFalseWhenTotalIsLessThanGoal() throws InvalidGoalException {
+		service.setGoal(5);
+		service.addProtein(4);
+		assertThat("Goal is met", service.isGoalMet(), is(false));
+	}
+	
+	@Test
+	public void goalIsMetReturnsTrueWhenTotalIsEqualToGoal() throws InvalidGoalException {
+		service.setGoal(5);
+		service.addProtein(5);
+		assertThat("Goal is met", service.isGoalMet(), is(true));
+	}
+	
+	@Test
+	public void getHistoryReturnsHistoryWhenProteinHasBeenAdded() {
+		service.addProtein(10);
+		assertThat("History is returned", service.getHistory().isEmpty(),is(false));
+	}
+	
+	@Test
+	public void removeNegativeProteinAmount() {
+		service.removeProtein(-10);
+	}
+	
+	@Test
+	public void hello() {
+		System.out.println("Hello");
+	}
+	
+	
+
 }
